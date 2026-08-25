@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Tracker Extension",
+  "version": "1.0.0",
+  "description": "Demo",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting",
+    "alarms",
+    "idle"
+  ],
+  "host_permissions": [
+    "https://vnexpress.net/*",
+    "https://*.vnexpress.net/*",
+    "https://dantri.com.vn/*",
+    "https://*.dantri.com.vn/*",
+    "https://tuoitre.vn/*",
+    "https://*.tuoitre.vn/*"
+  ],
+  "content_scripts": [
+  {
+    "matches": [
+      "https://vnexpress.net/*",
+      "https://*.vnexpress.net/*",
+      "https://dantri.com.vn/*",
+      "https://*.dantri.com.vn/*",
+      "https://tuoitre.vn/*",
+      "https://*.tuoitre.vn/*"
+    ],
+    "js": [
+      "config/sites.js",
+      "content/content.js"
+    ],
+    "run_at": "document_idle"
+  }
+]
+}
