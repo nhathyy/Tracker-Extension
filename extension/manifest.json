@@ -16,8 +16,12 @@
     "https://dantri.com.vn/*",
     "https://*.dantri.com.vn/*",
     "https://tuoitre.vn/*",
-    "https://*.tuoitre.vn/*"
+    "https://*.tuoitre.vn/*",
+    "http://localhost:3000/*"
   ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
   "content_scripts": [
   {
     "matches": [

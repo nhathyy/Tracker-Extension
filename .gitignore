@@ -1,0 +1,23 @@
+# Node
+node_modules/
+server/node_modules/
+
+# Env / secrets
+.env
+server/.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Data
+server/data/
+*.db
