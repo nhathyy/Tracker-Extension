@@ -72,6 +72,32 @@
 
     console.log(`%c[Tracker] ${eventType}`, "color: #00c853; font-weight: bold;");
     console.log(event);
+
+    chrome.runtime.sendMessage(
+      { type: "TRACKER_EVENT", event },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.warn("[Tracker] Gửi server lỗi:", chrome.runtime.lastError.message);
+          return;
+        }
+        if (response?.ok) {
+          console.log("%c[Tracker] Đã gửi lên server", "color: #2196f3;", response.data);
+        } else {
+          console.warn("[Tracker] Server từ chối:", response);
+        }
+      }
+    );
+
+    chrome.storage.local.get(["eventQueue"], (result) => {
+      const queue = result.eventQueue || [];
+      queue.push(event);
+      if(queue.length > 200) {
+        queue.splice(0, queue.length - 200);
+      }
+      chrome.storage.local.set({ eventQueue: queue }, () => {
+        console.log(`%c[Tracker] Đã lưu vào queue (tổng: ${queue.length})`, "color: #ff9800;");
+      });
+    });
   }
 
   emit("PAGE_ENTER");
@@ -149,10 +175,4 @@
   window.addEventListener("pagehide", () => {
     emit("PAGE_LEAVE");
   });
-
-  window.addEventListener("beforeunload", () => {
-    emit("PAGE_LEAVE");
-  });
-
-
 })();
