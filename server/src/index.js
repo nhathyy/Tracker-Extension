@@ -53,6 +53,30 @@ app.post("/api/events", async (req, res) => {
     }
 });
 
+app.get("/api/events", async (req, res) => {
+  try {
+    const { session_id, url } = req.query;
+    let sql = "SELECT * FROM events WHERE 1=1";
+    const params = [];
+
+    if (session_id) {
+      sql += " AND session_id = ?";
+      params.push(session_id);
+    }
+    if (url) {
+      sql += " AND url = ?";
+      params.push(url);
+    }
+
+    sql += " ORDER BY timestamp ASC LIMIT 500";
+    const [rows] = await pool.query(sql, params);
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error("GET /api/events error:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 app.get("/api/sessions", async (req, res) => {
   try {
     const [sessions] = await pool.query(`
@@ -103,6 +127,21 @@ app.get("/api/articles", async (req, res) => {
     console.error("GET /api/articles error:", err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
+});
+
+function summarize(title, content) {
+  const text = String(content || "").replace(/\s+/g, " ").trim();
+  if(!text) return title || "";
+
+  const parts = text.split(/(?<=[.!?…])\s+/).filter((s) => s.length > 20);
+  const picked = (parts.length ? parts : [text]).slice(0, 4);
+  return picked.join(" ");
+}
+
+app.post("/api/summarize", (req, res) => {
+  const { title, content } = req.body || {};
+  const summary = summarize(title, content);
+  res.json({ success: true, summary });
 });
 
 async function start() {
