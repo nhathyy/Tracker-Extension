@@ -1,4 +1,3 @@
-```md
 # News Reading Tracker
 
 Hệ thống theo dõi hành vi đọc tin tức trên trình duyệt Chrome.
@@ -13,39 +12,7 @@ Hệ thống gồm 3 phần:
 
 ---
 
-## 1. Kiến trúc hệ thống
-
-```
-[Người dùng đọc báo]
-        |
-        v
-Chrome Extension (Manifest V3)
-  - content script: detect bài, extract dữ liệu, phát event
-  - service worker: gửi event lên server
-  - chrome.storage: queue local
-        |
-        | POST /api/events
-        v
-Central Server (Node.js + Express + MySQL)
-  - lưu event
-  - GET /api/sessions
-  - GET /api/articles
-  - GET /api/events
-  - POST /api/summarize
-  - POST /api/classify
-        |
-        | REST API (poll 4s)
-        v
-Dashboard (Vue 3 + Vite + Chart.js)
-  - danh sách bài đã đọc
-  - nội dung + tóm tắt + chủ đề
-  - timeline event
-  - biểu đồ thống kê
-```
-
----
-
-## 2. Cài đặt và chạy hệ thống
+## 1. Cài đặt và chạy hệ thống
 
 ### Yêu cầu
 
@@ -53,20 +20,16 @@ Dashboard (Vue 3 + Vite + Chart.js)
 - Docker Desktop
 - Google Chrome
 
-### 2.1. Clone source
+### 1.1. Clone source
 
-```bash
-git clone https://github.com/nhathyy/Tracker-Extension.git
-cd Tracker-Extension
-git checkout develop
-```
+    git clone https://github.com/nhathyy/Tracker-Extension.git
+    cd Tracker-Extension
+    git checkout develop
 
-### 2.2. Chạy MySQL bằng Docker
+### 1.2. Chạy MySQL bằng Docker
 
-```bash
-cd server
-docker compose up -d
-```
+    cd server
+    docker compose up -d
 
 Thông tin kết nối:
 
@@ -78,62 +41,54 @@ Thông tin kết nối:
 
 Tạo bảng:
 
-```sql
-CREATE TABLE IF NOT EXISTS events (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  event_type VARCHAR(50) NOT NULL,
-  url TEXT NOT NULL,
-  domain VARCHAR(255),
-  title TEXT,
-  content LONGTEXT,
-  content_length INT DEFAULT 0,
-  session_id VARCHAR(64) NOT NULL,
-  timestamp VARCHAR(50) NOT NULL,
-  total_reading_time_ms INT DEFAULT 0,
-  reason VARCHAR(100),
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_session_id (session_id),
-  INDEX idx_timestamp (timestamp)
-);
-```
+    CREATE TABLE IF NOT EXISTS events (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      event_type VARCHAR(50) NOT NULL,
+      url TEXT NOT NULL,
+      domain VARCHAR(255),
+      title TEXT,
+      content LONGTEXT,
+      content_length INT DEFAULT 0,
+      session_id VARCHAR(64) NOT NULL,
+      timestamp VARCHAR(50) NOT NULL,
+      total_reading_time_ms INT DEFAULT 0,
+      reason VARCHAR(100),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_session_id (session_id),
+      INDEX idx_timestamp (timestamp)
+    );
 
-### 2.3. Chạy Central Server
+### 1.3. Chạy Central Server
 
-```bash
-cd server
-npm install
-npm run dev
-```
+    cd server
+    npm install
+    npm run dev
 
-Kiểm tra: [http://localhost:3000](http://localhost:3000)
+Kiểm tra: http://localhost:3000
 
 Kết quả mong đợi:
 
-```json
-{ "status": "ok", "message": "Tracker Server is running" }
-```
+    { "status": "ok", "message": "Tracker Server is running" }
 
-### 2.4. Chạy Dashboard
+### 1.4. Chạy Dashboard
 
-```bash
-cd dashboard
-npm install
-npm run dev
-```
+    cd dashboard
+    npm install
+    npm run dev
 
-Mở [http://localhost:5173](http://localhost:5173)
+Mở http://localhost:5173
 
-### 2.5. Cài Chrome Extension
+### 1.5. Cài Chrome Extension
 
 1. Mở `chrome://extensions`
 2. Bật Developer mode
 3. Chọn Load unpacked
 4. Chọn thư mục `extension/`
-5. Mở một bài viết trên VnExpress có URL dạng `https://vnexpress.net/<slug>-<id>.html`
+5. Mở một bài viết VnExpress có URL dạng `https://vnexpress.net/<slug>-<id>.html`
 
 ---
 
-## 3. Mô tả giải pháp theo đề bài
+## 2. Mô tả giải pháp theo đề bài
 
 ### Câu 1. Thu thập dữ liệu và thời gian đọc thật
 
@@ -167,28 +122,17 @@ Các event:
 
 Mỗi event gồm tối thiểu:
 
-```json
-{
-  "event_type": "PAGE_ENTER",
-  "url": "https://vnexpress.net/...",
-  "title": "...",
-  "timestamp": "2026-08-30T12:00:00.000Z",
-  "session_id": "uuid"
-}
-```
+- `event_type`
+- `url`
+- `title`
+- `timestamp`
+- `session_id`
 
 `session_id` được tạo bằng `crypto.randomUUID()` cho mỗi tab / mỗi lần đọc bài.
 
-Vì sao lưu dạng event, không chỉ 1 bản ghi tổng hợp:
-
-- Người dùng có thể đóng Chrome đột ngột, không kịp bản ghi cuối
-- Reconstruct được timeline
-- Tính lại thời gian đọc từ các đoạn ACTIVE
-- Dễ mở rộng thêm loại event sau này
-
 ### Câu 3. Central Server
 
-Stack: Node.js, Express, MySQL 8 (Docker), `mysql2`.
+Stack: Node.js, Express, MySQL 8 (Docker), mysql2.
 
 API bắt buộc:
 
@@ -224,9 +168,7 @@ Cập nhật gần realtime bằng polling 4 giây.
 2. Chuyển tab liên tục: `visibilitychange` phát INACTIVE / ACTIVE.
 3. Mở tab nhưng không thao tác: idle 30 giây → INACTIVE.
 4. Đóng Chrome đột ngột: dùng `pagehide` để gửi LEAVE. Nếu không kịp, các event trước đó đã được lưu.
-5. Gửi trùng event: chưa dedupe phía server (hạn chế đã ghi nhận).
-6. Mất Internet: lưu queue trong `chrome.storage.local`. Hiện gửi live qua service worker; chưa tự flush queue khi online lại.
-7. Website đổi HTML: `contentSelectors` thử lần lượt. Thêm site mới chỉ cần sửa `extension/config/sites.js`.
+
 
 ### Câu 6. Tóm tắt nội dung
 
@@ -254,7 +196,7 @@ Chưa hoàn thành.
 
 ---
 
-## 4. Chức năng đã hoàn thành
+## 3. Chức năng đã hoàn thành
 
 - Chrome Extension Manifest V3
 - Detect bài viết VnExpress theo regex URL
@@ -273,7 +215,7 @@ Chưa hoàn thành.
 
 ---
 
-## 5. Chức năng chưa hoàn thành / hạn chế hiện tại
+## 4. Chức năng chưa hoàn thành / hạn chế hiện tại
 
 - Tuổi Trẻ và Dân Trí: đã có hướng cấu hình nhưng extract chưa ổn định bằng VnExpress
 - Server chưa chống trùng event
@@ -284,75 +226,3 @@ Chưa hoàn thành.
 - Chưa dự đoán thời gian đọc (Câu 9)
 
 ---
-
-## 6. Quyết định kỹ thuật quan trọng
-
-- Dùng event stream thay vì một record tổng hợp để xử lý được các tình huống thực tế trong đề.
-- Content script không gọi thẳng `localhost` từ trang HTTPS. Service worker chịu trách nhiệm POST API.
-- Chọn MySQL + Docker thay vì SQLite để gần môi trường thật và dễ kiểm tra bằng DBeaver.
-- Dashboard dùng polling 4 giây thay vì WebSocket để hoàn thành đúng hạn.
-- Tóm tắt extractive + phân loại rule-based để không phụ thuộc API key và không bịa nội dung.
-- Ưu tiên làm ổn định VnExpress trước, các site khác thêm sau bằng config.
-
----
-
-## 7. Cấu trúc thư mục
-
-```text
-Tracker-Extension/
-├── extension/                 # Chrome Extension
-│   ├── manifest.json
-│   ├── background/service-worker.js
-│   ├── config/sites.js
-│   └── content/content.js
-├── server/                    # Central Server
-│   ├── docker-compose.yml
-│   ├── package.json
-│   └── src/
-│       ├── db.js
-│       └── index.js
-├── dashboard/                 # Dashboard Vue 3
-│   └── src/
-│       ├── App.vue
-│       └── ChartsPanel.vue
-└── README.md
-```
-
----
-
-## 8. Ảnh kết quả
-
-Thêm ảnh screenshot vào thư mục `docs/` rồi sửa link bên dưới:
-
-- Console Extension khi phát hiện bài viết
-- Bảng `events` trên DBeaver
-- Dashboard danh sách bài đã đọc
-- Timeline + tóm tắt + phân loại
-- Biểu đồ thống kê
-
-```md
-![Dashboard](docs/dashboard.png)
-![Events](docs/events.png)
-```
-
----
-
-## 9. Video demo
-
-YouTube: _dán link video vào đây_
-
-Nội dung video:
-
-- Demo Extension → Server → Dashboard
-- Giải thích thời gian đọc thật và hệ thống event
-- Demo các tình huống chuyển tab / idle
-- Tóm tắt giải pháp các câu hỏi trong đề
-```
-
-Copy hết khối trên vào `README.md` ở root, rồi:
-
-```bash
-git add README.md
-git commit -m "docs: add submission README"
-git push origin develop
-```
