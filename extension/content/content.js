@@ -21,8 +21,8 @@
         if(el) {
             const clone = el.cloneNode(true);
             clone.querySelectorAll(
-                "script, style, iframe, .ads, .advertisement, .box-tinlienquan, .related-news"
-            ).forEach(node => node.remove());
+              "script, style, iframe, .ads, .advertisement, .box-tinlienquan, .related-news, figcaption, .caption, .photo-caption, .img-caption, .detail-photo-caption"
+            ).forEach((node) => node.remove());
 
             const text = clone.innerText
                 .trim()
