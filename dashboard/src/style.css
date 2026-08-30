@@ -1,0 +1,113 @@
+:root {
+  --bg: #0a0b0e;
+  --bg-raised: #12141a;
+  --bg-card: #171a22;
+  --bg-hover: #1e222c;
+  --line: rgba(236, 231, 220, 0.08);
+  --line-strong: rgba(236, 231, 220, 0.16);
+  --text: #ece7dc;
+  --text-muted: #9a9488;
+  --text-dim: #6d685f;
+  --gold: #e2b657;
+  --gold-2: #f0d08a;
+  --gold-soft: rgba(226, 182, 87, 0.14);
+  --live: #5ee0a0;
+  --live-soft: rgba(94, 224, 160, 0.14);
+  --danger: #f07167;
+  --danger-soft: rgba(240, 113, 103, 0.14);
+  --paper: #f4ebdc;
+  --paper-ink: #2a241c;
+  --paper-muted: #6b6154;
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  --radius: 16px;
+  --font-ui: "Be Vietnam Pro", "Segoe UI", system-ui, sans-serif;
+  --font-serif: "Fraunces", "Iowan Old Style", Palatino, Georgia, serif;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -0.012em;
+  font-optical-sizing: auto;
+  color: var(--text);
+  background:
+    radial-gradient(1100px 520px at 8% -12%, rgba(226, 182, 87, 0.11), transparent 55%),
+    radial-gradient(900px 480px at 100% 0%, rgba(94, 224, 160, 0.05), transparent 46%),
+    var(--bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  background: none;
+}
+
+a {
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2e38;
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a404c;
+  background-clip: padding-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
